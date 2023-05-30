@@ -13,4 +13,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "clean_architecture_with_compose"
-include ':app'
+include ':presentation'
+include ':data'
+include ':domain'
