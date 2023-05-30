@@ -133,8 +133,9 @@ fun VideoItem(item: VideoEntity, query: String) {
                         .padding(4.dp)
                         .background(
                             Color.Black.copy(alpha = 0.7f),
-                            shape = RoundedCornerShape(4.dp)
-                        ),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
                     style = TextStyle(fontWeight = FontWeight.Bold)
                 )
             }
