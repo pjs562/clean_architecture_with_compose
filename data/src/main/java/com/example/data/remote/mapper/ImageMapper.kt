@@ -14,13 +14,8 @@ class ImageMapper {
     private fun fromReponse(
         response: ImageInfo
     ) : ImageEntity = ImageEntity(
-        response.collection,
-        response.thumbnailUrl,
         response.imageUrl,
-        response.width,
-        response.height,
         response.displaySitename,
-        response.docUrl,
-        response.datetime
+        response.docUrl
     )
 }
