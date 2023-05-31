@@ -10,3 +10,4 @@
 - Retrofit
 - Paging3
 - Support dark theme
+- Coil
