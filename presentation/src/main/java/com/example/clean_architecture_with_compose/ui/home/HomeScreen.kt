@@ -4,20 +4,26 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +32,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -67,7 +75,7 @@ fun HomeScreen() {
                 TextField(
                     value = searchQuery,
                     onValueChange = setSearchQuery,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp).fillMaxWidth().clip(RoundedCornerShape(15.dp)),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
                         onSearch = {
@@ -83,17 +91,20 @@ fun HomeScreen() {
                         )
                     },
                     trailingIcon = {
-                        Button(
-                            onClick = {
-                                selectedOption =
-                                    if (selectedOption == SortOption.Accurate) SortOption.Latest else SortOption.Accurate
-                            },
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text(text = selectedOption.text)
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { setSearchQuery("") }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    contentDescription = "Clear"
+                                )
+                            }
                         }
                     },
-                    placeholder = { Text("검색") }
+                    placeholder = { Text("검색") },
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    )
                 )
                 val coroutineScope = rememberCoroutineScope()
                 TabRow(selectedTabIndex = pagerState.currentPage) {
@@ -107,6 +118,12 @@ fun HomeScreen() {
                         )
                     }
                 }
+                Spacer(modifier = Modifier.padding(3.dp))
+                SegmentedButton(selectedOption) {
+                    selectedOption =
+                        if (selectedOption == SortOption.Accurate) SortOption.Latest else SortOption.Accurate
+                }
+                Spacer(modifier = Modifier.padding(3.dp))
             }
         },
         content = { paddingValues ->

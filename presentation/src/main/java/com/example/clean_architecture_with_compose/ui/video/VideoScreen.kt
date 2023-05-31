@@ -69,25 +69,34 @@ fun VideoScreen(
 @Composable
 fun VideoList(items: LazyPagingItems<VideoEntity>, query: String) {
     val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 4.dp, end = 4.dp)
-    ) {
-        items(
-            count = items.itemCount,
-            key = items.itemKey(),
-            contentType = items.itemContentType()
-        ) { index ->
-            val item = items[index]
-            if (item != null) {
-                VideoItem(item = item, query = query)
+    if (items.itemCount != 0)
+        LazyColumn(
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 4.dp, end = 4.dp)
+        ) {
+            items(
+                count = items.itemCount,
+                key = items.itemKey(),
+                contentType = items.itemContentType()
+            ) { index ->
+                val item = items[index]
+                if (item != null) {
+                    VideoItem(item = item, query = query)
+                }
+                Divider(color = MaterialTheme.colorScheme.primary)
             }
-            Divider(color = MaterialTheme.colorScheme.primary)
         }
-    }
+    else
+        Box(
+            contentAlignment = Alignment.Center, modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            Text(text = "$query 검색 결과가 없어요.")
+        }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,7 +158,7 @@ fun VideoItem(item: VideoEntity, query: String) {
                 Spacer(modifier = Modifier.padding(4.dp))
                 Text(text = item.datetime.dateTime())
                 Spacer(modifier = Modifier.padding(4.dp))
-                Text(text = item.author)
+                Text(text = item.author, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     }

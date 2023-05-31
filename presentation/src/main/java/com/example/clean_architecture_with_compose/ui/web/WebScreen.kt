@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
@@ -42,7 +44,7 @@ import com.example.domain.entity.WebEntity
 fun WebScreen(
     viewModel: WebViewModel,
     query: String,
-    sortOption: SortOption
+    sortOption: SortOption,
 ) {
     Surface {
         viewModel.changeValue(query, sortOption)
@@ -56,26 +58,31 @@ fun WebScreen(
 @Composable
 fun WebList(items: LazyPagingItems<WebEntity>, query: String) {
     val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 4.dp, end = 4.dp),
-    ) {
-        items(
-            count = items.itemCount,
-            key = items.itemKey(),
-            contentType = items.itemContentType(
-            )
-        ) { index ->
-            val item = items[index]
-            if (item != null) {
-                WebItem(item = item, query = query)
+    if (items.itemCount != 0)
+        LazyColumn(
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 4.dp, end = 4.dp),
+        ) {
+            items(
+                count = items.itemCount,
+                key = items.itemKey(),
+                contentType = items.itemContentType(
+                )
+            ) { index ->
+                val item = items[index]
+                if (item != null) {
+                    WebItem(item = item, query = query)
+                }
+                Divider(color = MaterialTheme.colorScheme.primary)
             }
-            Divider(color = MaterialTheme.colorScheme.primary)
         }
-    }
+    else
+        Box(contentAlignment = Alignment.Center ,modifier = Modifier.fillMaxSize().padding(10.dp)){
+            Text(text = "$query 검색 결과가 없어요.")
+        }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -46,34 +46,42 @@ import com.example.domain.entity.ImageEntity
 fun ImageScreen(
     viewModel: ImageViewModel,
     query: String,
-    sortOption: SortOption
+    sortOption: SortOption,
 ) {
     Surface {
         viewModel.changeValue(query, sortOption)
         val list = viewModel.imageList.collectAsLazyPagingItems()
-        ImageGrid(items = list)
+        ImageGrid(items = list, query = query)
         LoadStateView(loadState = list.loadState)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ImageGrid(items: LazyPagingItems<ImageEntity>) {
-
-    LazyVerticalGrid(
-        modifier = Modifier
-            .fillMaxSize(),
-        columns = GridCells.Fixed(2),
-        content = {
-            items(
-                count = items.itemCount,
-                key = items.itemKey(),
-                contentType = items.itemContentType()
-            ) { index ->
-                items[index]?.let { ImageItem(item = it) }
+fun ImageGrid(items: LazyPagingItems<ImageEntity>, query: String) {
+    if (items.itemCount != 0)
+        LazyVerticalGrid(
+            modifier = Modifier
+                .fillMaxSize(),
+            columns = GridCells.Fixed(2),
+            content = {
+                items(
+                    count = items.itemCount,
+                    key = items.itemKey(),
+                    contentType = items.itemContentType()
+                ) { index ->
+                    items[index]?.let { ImageItem(item = it) }
+                }
             }
+        )
+    else
+        Box(
+            contentAlignment = Alignment.Center, modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            Text(text = "$query 검색 결과가 없어요.")
         }
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,7 +127,8 @@ fun ImageItem(item: ImageEntity) {
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp),
-                    style = TextStyle(fontWeight = FontWeight.Bold)
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    color = Color.White
                 )
         }
     }
