@@ -47,21 +47,22 @@ fun ImageScreen(
     viewModel: ImageViewModel,
     query: String,
     sortOption: SortOption,
+    modifier: Modifier = Modifier,
 ) {
     Surface {
         viewModel.changeValue(query, sortOption)
         val list = viewModel.imageList.collectAsLazyPagingItems()
-        ImageGrid(items = list, query = query)
+        ImageGrid(items = list, query = query, modifier = modifier)
         LoadStateView(loadState = list.loadState)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ImageGrid(items: LazyPagingItems<ImageEntity>, query: String) {
+fun ImageGrid(items: LazyPagingItems<ImageEntity>, query: String, modifier: Modifier) {
     if (items.itemCount != 0)
         LazyVerticalGrid(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize(),
             columns = GridCells.Fixed(2),
             content = {

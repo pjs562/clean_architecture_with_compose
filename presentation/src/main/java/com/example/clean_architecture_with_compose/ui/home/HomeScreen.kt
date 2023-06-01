@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -14,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +23,9 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +36,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -52,7 +56,10 @@ enum class SortOption(val text: String, val value: String) {
     Accurate("정확도순", "accuracy")
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(
+    ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class,
+    ExperimentalMaterial3Api::class
+)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen() {
@@ -67,6 +74,9 @@ fun HomeScreen() {
         titles.size
     }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val topAppBarState = rememberTopAppBarState()
+    val scrollpBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
+    val modifier = Modifier.nestedScroll(scrollpBehavior.nestedScrollConnection)
 
     Scaffold(
         topBar = {
@@ -74,8 +84,11 @@ fun HomeScreen() {
                 TextField(
                     value = searchQuery,
                     onValueChange = setSearchQuery,
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp).fillMaxWidth().clip(RoundedCornerShape(15.dp)),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 20.dp, top = 8.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(15.dp)),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
                         onSearch = {
                             query = searchQuery
@@ -117,12 +130,14 @@ fun HomeScreen() {
                         )
                     }
                 }
-                Spacer(modifier = Modifier.padding(3.dp))
-                SegmentedButton(selectedOption) {
-                    selectedOption =
-                        if (selectedOption == SortOption.Accurate) SortOption.Latest else SortOption.Accurate
-                }
-                Spacer(modifier = Modifier.padding(3.dp))
+                TopAppBar(
+                    title = {
+                        SegmentedButton(selectedOption) {
+                            selectedOption =
+                                if (selectedOption == SortOption.Accurate) SortOption.Latest else SortOption.Accurate
+                        }
+                    }, scrollBehavior = scrollpBehavior
+                )
             }
         },
         content = { paddingValues ->
@@ -136,17 +151,17 @@ fun HomeScreen() {
                     when (index) {
                         0 -> {
                             val viewModel: WebViewModel = hiltViewModel()
-                            WebScreen(viewModel, query, selectedOption)
+                            WebScreen(viewModel, query, selectedOption, modifier)
                         }
 
                         1 -> {
                             val viewModel: VideoViewModel = hiltViewModel()
-                            VideoScreen(viewModel, query, selectedOption)
+                            VideoScreen(viewModel, query, selectedOption, modifier)
                         }
 
                         2 -> {
                             val viewModel: ImageViewModel = hiltViewModel()
-                            ImageScreen(viewModel, query, selectedOption)
+                            ImageScreen(viewModel, query, selectedOption, modifier)
                         }
 
                         else -> throw IllegalArgumentException("Invalid page: $index")

@@ -45,24 +45,25 @@ fun WebScreen(
     viewModel: WebViewModel,
     query: String,
     sortOption: SortOption,
+    modifier: Modifier = Modifier,
 ) {
     Surface {
         viewModel.changeValue(query, sortOption)
         val list = viewModel.webList.collectAsLazyPagingItems()
-        WebList(items = list, query = query)
+        WebList(items = list, query = query, modifier = modifier)
         LoadStateView(loadState = list.loadState)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WebList(items: LazyPagingItems<WebEntity>, query: String) {
+fun WebList(items: LazyPagingItems<WebEntity>, query: String, modifier: Modifier) {
     val listState = rememberLazyListState()
     if (items.itemCount != 0)
         LazyColumn(
             state = listState,
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(start = 4.dp, end = 4.dp),
         ) {
